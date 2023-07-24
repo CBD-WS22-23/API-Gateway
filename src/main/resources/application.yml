@@ -1,0 +1,16 @@
+server:
+  port: 8085
+eureka:
+  client:
+    service-url:
+      defaultZone: http://host.docker.internal:8084/eureka/
+spring:
+  application:
+    name: "APIGateway"
+  cloud:
+    gateway:
+      routes:
+        - id: BasketService
+          uri: lb://BasketService
+          predicates:
+            - Path=/api/v1/**

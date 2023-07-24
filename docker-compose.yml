@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  api-gateway:
+    container_name: APIGateway
+    expose:
+      - '8085'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8085:8085'
+    networks:
+      - internal
+
+networks:
+  internal:
+    name: internal
+    external: true
