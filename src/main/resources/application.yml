@@ -5,12 +5,45 @@ eureka:
     service-url:
       defaultZone: http://host.docker.internal:8084/eureka/
 spring:
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
   application:
     name: "APIGateway"
   cloud:
     gateway:
       routes:
+        - id: ProductService
+          uri: lb://ProductService
+          predicates:
+            - Path=/ps/api/v1/**
         - id: BasketService
           uri: lb://BasketService
           predicates:
-            - Path=/api/v1/**
+            - Path=/bs/api/v1/**
+        - id: CheckoutService
+          uri: lb://CheckoutService
+          predicates:
+            - Path=/cs/api/v1/**
+        - id: PaymentService
+          uri: lb://PaymentService
+          predicates:
+            - Path=/pys/api/v1/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://host.docker.internal:8180/auth/realms/api-gateway
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://host.docker.internal:8180/auth/realms/api-gateway
+            user-name-attribute: preferred_username
+keycloak:
+  realm: api-gateway
+  auth-server-url: http:/host.docker.internal:8180/auth
+  resource: gateway-client
+  bearer-only: true
+  credentials:
+    secret: 6d5bdfab-e763-4da6-bcad-09b924974d31
